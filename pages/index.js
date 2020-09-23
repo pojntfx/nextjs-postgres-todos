@@ -1,22 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import useSWR from "swr";
+import fetcher from "../lib/fetcher";
 
-const Home = () => {
-  const [todos, setTodos] = useState([]);
+export const getServerSideProps = async ({ req }) => {
+  const todos = await fetcher(`http://${req.headers.host}/api/todos`);
 
-  useEffect(() => {
-    setTodos([
-      {
-        id: 1,
-        title: "First todo",
-        body: "First todo body",
-      },
-      {
-        id: 2,
-        title: "Second todo",
-        body: "Second todo body",
-      },
-    ]);
-  }, []);
+  return {
+    props: {
+      todos,
+    },
+  };
+};
+
+const Home = (props) => {
+  const { data: todos, err } = useSWR("/api/todos", fetcher, {
+    initialData: props.todos,
+  });
+
+  if (err) return <div>😞 Failed to load todos</div>;
+  if (!todos) return <div>⏳ Loading todos ...</div>;
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
