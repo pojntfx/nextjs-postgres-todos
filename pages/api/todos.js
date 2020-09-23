@@ -17,6 +17,28 @@ const todos = async (req, res) => {
       return;
     }
 
+    case "POST": {
+      if (!req.body.title || !req.body.body) {
+        res.status = 422;
+        res.end("missing todo title or body");
+
+        return;
+      }
+
+      const [newTodo] = await query`insert into todos (title, body, insertDate)
+values (${req.body.title}, ${req.body.body}, current_timestamp)
+returning *;`;
+
+      res.statusCode = 201;
+      res.json({
+        id: newTodo.id,
+        title: newTodo.title,
+        body: newTodo.body,
+      });
+
+      return;
+    }
+
     default: {
       res.statusCode = 405;
       res.end("method not allowed");
