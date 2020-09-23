@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import fetcher from "../lib/fetcher";
 
 export const getServerSideProps = async ({ req }) => {
@@ -29,7 +29,36 @@ const Home = (props) => {
     <div>
       <h1>Todos</h1>
 
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+
+          const newTodo = {
+            title,
+            body,
+          };
+
+          setTitle("");
+          setBody("");
+
+          mutate("/api/todos", [
+            ...todos,
+            { id: Date.now(), ...newTodo },
+            false,
+          ]);
+
+          await fetcher("/api/todos", {
+            method: "POST",
+            body: JSON.stringify(newTodo),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          });
+
+          mutate("/api/todos");
+        }}
+      >
         <label>
           New todo title:{" "}
           <input
