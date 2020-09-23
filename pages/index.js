@@ -42,11 +42,11 @@ const Home = (props) => {
           setBody("");
 
           if (updatingTodoId == -1) {
-            mutate("/api/todos", [
-              ...todos,
-              { id: Date.now(), ...newTodo },
-              false,
-            ]);
+            mutate(
+              "/api/todos",
+              [...todos, { id: Date.now(), ...newTodo }],
+              false
+            );
 
             await fetcher("/api/todos", {
               method: "POST",
