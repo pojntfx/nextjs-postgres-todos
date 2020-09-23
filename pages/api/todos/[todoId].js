@@ -48,6 +48,28 @@ const todo = async (req, res) => {
       return;
     }
 
+    case "PUT": {
+      if (!req.body.title || !req.body.body) {
+        res.status = 422;
+        res.end("missing todo title or body");
+
+        return;
+      }
+
+      const [
+        updatedTodo,
+      ] = await query`update todos set title = ${req.body.title}, body = ${req.body.body} where id = ${req.query.todoId} returning *;`;
+
+      res.statusCode = 200;
+      res.json({
+        id: updatedTodo.id,
+        title: updatedTodo.title,
+        body: updatedTodo.body,
+      });
+
+      return;
+    }
+
     default: {
       res.statusCode = 405;
       res.end("method not allowed");
