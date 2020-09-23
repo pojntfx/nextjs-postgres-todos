@@ -99,7 +99,23 @@ const Home = (props) => {
               <p>{t.body}</p>
 
               <button>Update todo</button>
-              <button>Delete todo</button>
+              <button
+                onClick={async () => {
+                  mutate(
+                    "/api/todos",
+                    todos.filter((oldTodo) => oldTodo.id != t.id),
+                    false
+                  );
+
+                  await fetcher(`/api/todos/${t.id}`, {
+                    method: "DELETE",
+                  });
+
+                  mutate("/api/todos");
+                }}
+              >
+                Delete todo
+              </button>
             </div>
           </li>
         ))}
