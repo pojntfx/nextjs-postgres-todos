@@ -62,13 +62,13 @@ const Home = (props) => {
             const todoIdToUpdate = updatingTodoId;
             setUpdatingTodoId(-1);
 
-            mutate("/api/todos", [
-              ...todos,
+            mutate(
+              "/api/todos",
               todos.map((todo) =>
                 todo.id == todoIdToUpdate ? { ...todo, ...newTodo } : todo
               ),
-              false,
-            ]);
+              false
+            );
 
             await fetcher(`/api/todos/${todoIdToUpdate}`, {
               method: "PUT",
